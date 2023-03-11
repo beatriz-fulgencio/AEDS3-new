@@ -77,8 +77,6 @@ public class Sort {
         file1.seek(0);
         file2.seek(0);
 
-        size = size * 2;
-
         while (true) {
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
                                                                                                       // and file 2
@@ -86,7 +84,7 @@ public class Sort {
                                                                                                       // registers
                 break;
 
-            intercalacao(file1, file2, file3, size / 2); // writes in file 3
+            intercalacao(file1, file2, file3, size); // writes in file 3
 
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
                                                                                                       // and file 2
@@ -94,7 +92,7 @@ public class Sort {
                                                                                                       // registers
                 break;
 
-            intercalacao(file1, file2, file4, size / 2); // writes in file 4
+            intercalacao(file1, file2, file4, size); // writes in file 4
         }
 
         /* Segunda intercalação */
@@ -107,7 +105,7 @@ public class Sort {
         file3.seek(0);
         file4.seek(0);
 
-        size = size * 2;
+        size *= 2;
 
         while (true) {
             if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length()) // while file 3
@@ -116,7 +114,7 @@ public class Sort {
                                                                                                       // registers
                 break;
 
-            intercalacao(file3, file4, file1, size / 2); // writes in file 1
+            intercalacao(file3, file4, file1, size); // writes in file 1
 
             if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length()) // while file 3
                                                                                                       // and file 4
@@ -124,12 +122,14 @@ public class Sort {
                                                                                                       // registers
                 break;
 
-            intercalacao(file3, file4, file2, size / 2); // writes in file 2
+            intercalacao(file3, file4, file2, size); // writes in file 2
         }
 
         /* Terceira intercalação */
         file1.seek(0);
         file2.seek(0);
+
+        size *= 2;
 
         while (true) {
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
@@ -181,6 +181,76 @@ public class Sort {
         fileReader.readInt();
         movie.set_dateAdded(fileReader.readUTF()); // set the date of the movie
 
+    }
+
+    /* Intercalação segmentos de tamanho variável */
+
+    public void intercalacaoSegmentosVariaveis() throws Exception {
+
+        // Distribuição
+        int fileControl = 0;
+        fileReader.seek(0); // set the poiter at the beggining of the file
+        fileReader.readUTF();// skip last id
+
+        Movie[] array = new Movie[size];
+
+        while (fileReader.getFilePointer() < fileReader.length()) {
+            int currentElement = 0; // count the array elements
+            while (currentElement < size) {
+                array[currentElement] = new Movie();
+                int sizeMovie = fileReader.readInt();
+                position = fileReader.getFilePointer();
+                setMovie(array[currentElement]);
+                fileReader.seek(position);
+                fileReader.skipBytes(sizeMovie);
+                currentElement++;
+            }
+
+            // sorts the elements in primary memory
+            quicksort(array);
+
+            // 2 ways:
+            if (fileControl % 2 == 0) {
+                // add arrays to first file
+                for (int i = 0; i < size; i++) {
+                    // add array[currentElement] to "arquivo1.db"
+                    writeMovie(array[i], file1);
+                }
+            } else {
+                // add arrays to second file
+                for (int i = 0; i < size; i++) {
+                    // add array[currentElement] to "arquivo2.db"
+                    writeMovie(array[i], file2);
+                }
+            }
+            fileControl++;
+        }
+
+        /* Primeira Intercalação */
+
+        // seeks the pointer at the beggining of the two files
+        file1.seek(0);
+        file2.seek(0);
+
+        size = size * 2;
+
+        while (true) {
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
+                                                                                                      // and file 2
+                                                                                                      // still have
+                                                                                                      // registers
+                break;
+
+            intercalacao(file1, file2, file3); // writes in file 3
+
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
+                                                                                                      // and file 2
+                                                                                                      // still have
+                                                                                                      // registers
+                break;
+
+            intercalacao(file1, file2, file4); // writes in file 4
+        }
     }
 
     /* Quicksort -> sort in primary memory */
@@ -278,6 +348,7 @@ public class Sort {
         return movie;
     }
 
+    // intercalação comum
     private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite, int size)
             throws IOException, Exception {
 
@@ -375,6 +446,34 @@ public class Sort {
             }
             movie1 = null;
             movie2 = null;
+        }
+    }
+
+    // intercalação com segmentos de tamanho variável
+    private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite)
+            throws IOException, Exception {
+
+        Movie movie1 = null;
+        Movie movie2 = null;
+
+        int cont1 = 0;
+        int cont2 = 0;
+        String id1 = "";
+        String id2 = "";
+        int sizeMovie1 = 0;
+        int sizeMovie2 = 0;
+        long position1 = 0;
+        long position2 = 0;
+        long firstPosition1 = 0;
+        long firstPosition2 = 0;
+
+        
+    }
+
+    private int control(RandomAccessFile file, long pos) {
+        
+        while (file.getFilePointer() < file.length()) {
+
         }
     }
 
