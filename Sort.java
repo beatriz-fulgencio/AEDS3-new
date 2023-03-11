@@ -232,24 +232,46 @@ public class Sort {
         file1.seek(0);
         file2.seek(0);
 
-        size = size * 2;
+        int size1 =0, size2 = 0;
 
         while (true) {
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
-                                                                                                      // and file 2
-                                                                                                      // still have
-                                                                                                      // registers
-                break;
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) break;
 
-            intercalacao(file1, file2, file3); // writes in file 3
 
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) // while file 1
-                                                                                                      // and file 2
-                                                                                                      // still have
-                                                                                                      // registers
-                break;
+            size1 = control(file1, file1.getFilePointer());
+            size2= control(file2, file2.getFilePointer());
 
-            intercalacao(file1, file2, file4); // writes in file 4
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+size1);
+            System.out.println("  "+file1.length());
+            System.out.println(" -----------------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+size2);
+            System.out.println("  "+file2.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+
+
+            intercalacao(file1, file2, file3, size1, size2); // writes in file 3
+
+
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())  break;
+
+            size1 = control(file1, file1.getFilePointer());
+            size2= control(file2, file2.getFilePointer());
+
+
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+size1);
+            System.out.println("  "+file1.length());
+            System.out.println(" -----------------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+size2);
+            System.out.println("  "+file2.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+
+            intercalacao(file1, file2, file4, size1, size2); // writes in file 4
         }
     }
 
@@ -450,7 +472,8 @@ public class Sort {
     }
 
     // intercalação com segmentos de tamanho variável
-    private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite)
+    private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite, int size1,
+            int size2)
             throws IOException, Exception {
 
         Movie movie1 = null;
@@ -467,14 +490,132 @@ public class Sort {
         long firstPosition1 = 0;
         long firstPosition2 = 0;
 
-        
+        while (true) {
+            if (cont1 >= size && cont2 >= size) { // current position in fRead1 >= f1 size and current position in
+                                                  // fRead2 >= f2 size
+                break;
+            } else if (fRead1.getFilePointer() >= fRead1.length() && fRead2.getFilePointer() >= fRead2.length()) { // current
+                                                                                                                   // position
+                                                                                                                   // in
+                                                                                                                   // fRead1
+                                                                                                                   // >=
+                                                                                                                   // f1
+                                                                                                                   // size
+                                                                                                                   // and
+                                                                                                                   // current
+                                                                                                                   // position
+                                                                                                                   // in
+                                                                                                                   // fRead2
+                                                                                                                   // >=
+                                                                                                                   // f2
+                                                                                                                   // size
+                break;
+            }
+
+            if (fRead1.getFilePointer() < fRead1.length()) { // still has registers in f1
+                if (cont1 < size1) {
+                    firstPosition1 = fRead1.getFilePointer(); // gets pointer to the beginning of the register
+                    sizeMovie1 = fRead1.readInt(); // reads the register size
+                    position1 = fRead1.getFilePointer(); // gets pointer to the beginning of the register
+                    boolean b1 = fRead1.readBoolean(); // checks if the register is valid
+                    fRead1.readInt(); // reads 4
+                    id1 = fRead1.readUTF(); // reads the movie id
+                    movie1 = readMovie(sizeMovie1, id1, b1, fRead1);
+                }
+            }
+
+            if (fRead2.getFilePointer() < fRead2.length()) { // still has registers in f1
+                if (cont2 < size2) {
+                    firstPosition2 = fRead2.getFilePointer(); // gets pointer to the beginning of the register
+                    sizeMovie2 = fRead2.readInt(); // reads the register size
+                    position2 = fRead2.getFilePointer(); // gets pointer to the beginning of the register
+                    boolean b2 = fRead2.readBoolean(); // checks if the register is valid
+                    fRead2.readInt(); // reads 4
+                    id2 = fRead2.readUTF(); // reads the movie id
+                    movie2 = readMovie(sizeMovie2, id2, b2, fRead2);
+                }
+            }
+
+            if (movie1 != null && movie2 != null) { // checks if movie1 and movie2 have registers
+                if (id1.compareTo(id2) < 0) { // if id1 < id2
+                    writeMovie(movie1, fWrite); // writes the movie of f1 in fWrite
+                    fRead1.seek(position1); // seeks pointer to the beginning of the register in f1
+                    fRead1.skipBytes(sizeMovie1); // skips the register that was written
+                    fRead2.seek(firstPosition2); // seeks pointer to the beginning of the register in f2
+                    cont1++; // current element in f1++
+
+                } else { // if ! (id1 < id2)
+                    writeMovie(movie2, fWrite); // writes the movie of f2 in fWrite
+                    fRead2.seek(position2); // seeks pointer to the beginning of the register in f2
+                    fRead2.skipBytes(sizeMovie2); // skips the register that was written
+                    fRead1.seek(firstPosition1); // seeks pointer to the beginning of the register in f1
+                    cont2++; // current element in f2++
+                }
+            } else {
+                if (movie1 == null && movie2 == null)
+                    break;
+
+                if (movie1 != null) { // if eof f2
+                    writeMovie(movie1, fWrite); // writes the movie of f1 in fWrite
+                    fRead1.seek(position1); // seeks pointer to the beginning of the register in f1
+                    fRead1.skipBytes(sizeMovie1); // skips the register that was written
+                    cont1++; // current element in f1++
+
+                } else if (movie2 != null) { // if eof f1
+                    writeMovie(movie2, fWrite); // writes the movie of f2 in fWrite
+                    fRead2.seek(position2); // seeks pointer to the beginning of the register in f2
+                    fRead2.skipBytes(sizeMovie2); // skips the register that was written
+                    cont2++; // current element in f2++
+                }
+            }
+            movie1 = null;
+            movie2 = null;
+        }
     }
 
-    private int control(RandomAccessFile file, long pos) {
-        
-        while (file.getFilePointer() < file.length()) {
+    private int control(RandomAccessFile file, long pos) throws Exception {
+        Movie m1 = null;
+        Movie m2 = null;
+        int count = 0;
 
+        String id1 = "";
+        String id2 = "";
+
+        while (true) {
+
+            /*reads first movie */
+            if(file.getFilePointer() < file.length()){
+                int sizeMovie1 = file.readInt(); // reads the register size
+                // position = file.getFilePointer(); // gets pointer to the beginning of the register
+                boolean b1 = file.readBoolean(); // checks if the register is valid
+                file.readInt(); // reads 4
+                id1 = file.readUTF(); // reads the movie id
+                m1 = readMovie(sizeMovie1, id1, b1, file);    
+            }
+          
+            /*reads second movie */
+            if(file.getFilePointer() < file.length()){
+                pos = file.getFilePointer(); // gets pointer to the beginning of the register
+                int sizeMovie2 = file.readInt(); // reads the register size
+                // position = file.getFilePointer(); // gets pointer to the beginning of the register
+                boolean b2 = file.readBoolean(); // checks if the register is valid
+                file.readInt(); // reads 4
+                id2 = file.readUTF(); // reads the movie id
+                m2 = readMovie(sizeMovie2, id2, b2, file);    
+            }
+
+            if(m1==null || m2==null){
+                break;
+            }
+            
+            if(id1.compareTo(id2)>0){
+                break;
+            }
+
+            file.seek(pos);
+            count++;
         }
+        return count;
     }
 
     // writes the ids in id.txt to check if the sort works
@@ -495,6 +636,31 @@ public class Sort {
                     teste1.skipBytes(sizeMovie - 11);
                 } else {
                     teste1.skipBytes(sizeMovie - 1); // if is not valid go to next one
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fileWrite.close();
+    }
+
+    public void read(int x) throws IOException {
+        FileWriter fileWrite = new FileWriter("Id.txt");
+        int sizeMovie;
+        boolean lapide;
+        String movieId;
+        file3.seek(0);
+        try {
+            while (file3.getFilePointer() < file3.length()) { // while the file is not done
+                sizeMovie = file3.readInt(); // read the size of the object being read
+                lapide = file3.readBoolean(); // see if movie is valid
+                if (lapide) {
+                    file3.readInt();
+                    movieId = file3.readUTF();
+                    fileWrite.write(movieId + "  ");
+                    file3.skipBytes(sizeMovie - 11);
+                } else {
+                    file3.skipBytes(sizeMovie - 1); // if is not valid go to next one
                 }
             }
         } catch (Exception e) {
