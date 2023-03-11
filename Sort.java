@@ -5,7 +5,7 @@ public class Sort {
     private File file;
     private RandomAccessFile fileReader;
     private long position;
-    int size = 100;
+    int size = 20;
 
     File file_1 = new File("arquivo1.db");
     RandomAccessFile file1 = new RandomAccessFile("arquivo1.db", "rw");
@@ -18,6 +18,9 @@ public class Sort {
 
     File file_4 = new File("arquivo4.db");
     RandomAccessFile file4 = new RandomAccessFile("arquivo4.db", "rw");
+
+    File teste_1 = new File("teste.db");
+    RandomAccessFile teste1 = new RandomAccessFile("teste.db", "rw");
 
     /* Intercalação balanceada comum */
 
@@ -76,12 +79,14 @@ public class Sort {
 
         size = size * 2;
 
-        while(true){
-            if(file1.getFilePointer()>=file1.length() && file2.getFilePointer()>=file2.length()) break;
-            
+        while (true) {
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
+                break;
+
             intercalacao(file1, file2, file3, size);
 
-            if(file1.getFilePointer()>=file1.length() && file2.getFilePointer()>=file2.length()) break;
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
+                break;
 
             intercalacao(file1, file2, file4, size);
         }
@@ -98,26 +103,28 @@ public class Sort {
 
         size = size * 2;
 
-        while(true){
-            if(file3.getFilePointer()>=file3.length() && file4.getFilePointer()>=file4.length()) break;
-            
+        while (true) {
+            if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length())
+                break;
+
             intercalacao(file3, file4, file1, size);
 
-            if(file3.getFilePointer()>=file3.length() && file4.getFilePointer()>=file4.length()) break;
+            if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length())
+                break;
 
             intercalacao(file3, file4, file2, size);
         }
 
-        /*Terceira intercalação */
-        fileReader.setLength(0);
+        /* Terceira intercalação */
+        // fileReader.setLength(0);
         file1.seek(0);
         file2.seek(0);
 
-        while(true){
-            if(file1.getFilePointer()>=file1.length() && file2.getFilePointer()>=file2.length()) break;
-            intercalacao(file1, file2, fileReader, size);
+        while (true) {
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
+                break;
+            intercalacao(file1, file2, teste1, size);
         }
-
 
     }
 
@@ -252,7 +259,8 @@ public class Sort {
         return movie;
     }
 
-    private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite, int size) throws IOException, Exception {
+    private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite, int size)
+            throws IOException, Exception {
 
         Movie movie1 = null;
         Movie movie2 = null;
@@ -261,22 +269,23 @@ public class Sort {
         int cont2 = 0;
 
         while (true) {
-            if (cont1 >= size && cont2 >= size)
+            if (cont1 >= size && cont2 >= size) {
                 break;
-            else if (fRead1.getFilePointer() >= fRead1.length() && fRead2.getFilePointer() >= fRead2.length())
+            } else if (fRead1.getFilePointer() >= fRead1.length() && fRead2.getFilePointer() >= fRead2.length()) {
                 break;
+            }
 
-            
-                String id1 = "";
-                String id2 = "";
-                int sizeMovie1 = 0;
-                int sizeMovie2 = 0;
-                long position1 = 0;
-                long position2 = 0;
-                long firstPosition1 = 0;
-                long firstPosition2 = 0;
+            String id1 = "";
+            String id2 = "";
+            int sizeMovie1 = 0;
+            int sizeMovie2 = 0;
+            long position1 = 0;
+            long position2 = 0;
+            long firstPosition1 = 0;
+            long firstPosition2 = 0;
 
-                if (fRead1.getFilePointer() < fRead1.length()) {
+            if (fRead1.getFilePointer() < fRead1.length()) {
+                if (cont1 < size) {
                     firstPosition1 = fRead1.getFilePointer();
                     sizeMovie1 = fRead1.readInt(); // reads the register size
                     position1 = fRead1.getFilePointer(); // gets pointer to the beginning of the register
@@ -284,10 +293,11 @@ public class Sort {
                     fRead1.readInt(); // reads 4
                     id1 = fRead1.readUTF(); // reads the movie id
                     movie1 = readMovie(sizeMovie1, id1, b1, fRead1);
-
                 }
+            }
 
-                if (fRead2.getFilePointer() < fRead2.length()) {
+            if (fRead2.getFilePointer() < fRead2.length()) {
+                if (cont2 < size) {
                     firstPosition2 = fRead2.getFilePointer();
                     sizeMovie2 = fRead2.readInt(); // reads the register size
                     position2 = fRead2.getFilePointer(); // gets pointer to the beginning of the register
@@ -296,42 +306,44 @@ public class Sort {
                     id2 = fRead2.readUTF(); // reads the movie id
                     movie2 = readMovie(sizeMovie2, id2, b2, fRead2);
                 }
+            }
 
-                if (movie1 != null && movie2 != null) {
-                    if (id1.compareTo(id2) < 0) {
-                        writeMovie(movie1, fWrite);
-                        fRead1.seek(position1);
-                        fRead1.skipBytes(sizeMovie1);
-                        fRead2.seek(firstPosition2);
-                        cont1++;
+            if (movie1 != null && movie2 != null) {
+                if (id1.compareTo(id2) < 0) {
+                    writeMovie(movie1, fWrite);
+                    fRead1.seek(position1);
+                    fRead1.skipBytes(sizeMovie1);
+                    fRead2.seek(firstPosition2);
+                    cont1++;
 
-                    } else {
-                        writeMovie(movie2, fWrite);
-                        fRead2.seek(position2);
-                        fRead2.skipBytes(sizeMovie2);
-                        fRead1.seek(firstPosition1);
-                        cont2++;
-                    }
                 } else {
-                    if (movie1 == null && movie2 == null)
-                        break;
-
-                    if (movie1 != null) {
-                        writeMovie(movie1, fWrite);
-                        fRead1.seek(position1);
-                        fRead1.skipBytes(sizeMovie1);
-                        fRead2.seek(firstPosition2);
-                        cont1++;
-
-                    } else if (movie2 != null) {
-                        writeMovie(movie2, fWrite);
-                        fRead2.seek(position2);
-                        fRead2.skipBytes(sizeMovie2);
-                        fRead1.seek(firstPosition1);
-                        cont2++;
-                    }
+                    writeMovie(movie2, fWrite);
+                    fRead2.seek(position2);
+                    fRead2.skipBytes(sizeMovie2);
+                    fRead1.seek(firstPosition1);
+                    cont2++;
                 }
+            } else {
+                if (movie1 == null && movie2 == null)
+                    break;
 
+                if (movie1 != null) {
+                    writeMovie(movie1, fWrite);
+                    fRead1.seek(position1);
+                    fRead1.skipBytes(sizeMovie1);
+                    fRead2.seek(firstPosition2);
+                    cont1++;
+
+                } else if (movie2 != null) {
+                    writeMovie(movie2, fWrite);
+                    fRead2.seek(position2);
+                    fRead2.skipBytes(sizeMovie2);
+                    fRead1.seek(firstPosition1);
+                    cont2++;
+                }
+            }
+            movie1 = null;
+            movie2 = null;
         }
 
         // for (int u = 0; u < 4; u++) {
