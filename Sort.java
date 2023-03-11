@@ -5,7 +5,7 @@ public class Sort {
     private File file;
     private RandomAccessFile fileReader;
     private long position;
-    int size = 400;
+    int size = 482;
 
     File file_1 = new File("arquivo1.db");
     RandomAccessFile file1 = new RandomAccessFile("arquivo1.db", "rw");

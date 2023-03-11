@@ -4,7 +4,7 @@ import java.util.*;
 
 public class exTP {
 
-    public static int qntde = 3200;
+    public static int qntde = 3856;
 
     public static void read(Crud bfr) throws FileNotFoundException {
         File file = new File("netflix.csv");
@@ -13,7 +13,7 @@ public class exTP {
         int i = 0;
         try {
             sc = new Scanner(file);
-            while (/* sc.hasNextLine() */ i < 3200) {
+            while (/* sc.hasNextLine() */ i < 3856) {
                 Movie movie = new Movie(qntde--);
                 movie.read(sc.nextLine());
                 bfr.writeMovie(movie);
@@ -31,7 +31,7 @@ public class exTP {
     public static void main(String[] args) throws Exception {
         Crud byteFileRandler = new Crud("movies.db");
 
-        read(byteFileRandler);
+        // read(byteFileRandler);
 
         // byteFileRandler.clear();
         // byteFileRandler.read("0000");
