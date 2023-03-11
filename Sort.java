@@ -5,7 +5,7 @@ public class Sort {
     private File file;
     private RandomAccessFile fileReader;
     private long position;
-    int size = 20;
+    int size = 400;
 
     File file_1 = new File("arquivo1.db");
     RandomAccessFile file1 = new RandomAccessFile("arquivo1.db", "rw");
@@ -38,9 +38,9 @@ public class Sort {
 
         Movie[] array = new Movie[size];
 
-        int arq = 0; // contabiliza os elementos do array
+        //int arq = 0; // contabiliza os elementos do array
 
-        while (/* fileReader.getFilePointer() < fileReader.length() */arq < 40) {
+        while (fileReader.getFilePointer() < fileReader.length() ) {
             int currentElement = 0; // contabiliza os elementos do array
             while (currentElement < size) {
                 array[currentElement] = new Movie();
@@ -50,7 +50,7 @@ public class Sort {
                 fileReader.seek(position);
                 fileReader.skipBytes(sizeMovie);
                 currentElement++;
-                arq++;
+                // arq++;
             }
 
             quicksort(array);
@@ -80,15 +80,21 @@ public class Sort {
         size = size * 2;
 
         while (true) {
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+ file1.length());
+            System.out.println("--------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+ file2.length());
+
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
                 break;
 
-            intercalacao(file1, file2, file3, size);
+            intercalacao(file1, file2, file3, size/2);
 
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
                 break;
 
-            intercalacao(file1, file2, file4, size);
+            intercalacao(file1, file2, file4, size/2);
         }
 
         /* Segunda intercalação */
@@ -104,15 +110,24 @@ public class Sort {
         size = size * 2;
 
         while (true) {
+            System.out.println(file3.getFilePointer());
+            System.out.println(" "+ file3.length());
+            System.out.println("--------------");
+            System.out.println(file4.getFilePointer());
+            System.out.println(" "+ file4.length());
+            System.out.println("--------------");
+            System.out.println("--------------");
+
+
             if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length())
                 break;
 
-            intercalacao(file3, file4, file1, size);
+            intercalacao(file3, file4, file1, size/2);
 
             if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length())
                 break;
 
-            intercalacao(file3, file4, file2, size);
+            intercalacao(file3, file4, file2, size/2);
         }
 
         /* Terceira intercalação */
@@ -121,6 +136,14 @@ public class Sort {
         file2.seek(0);
 
         while (true) {
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+ file1.length());
+            System.out.println("--------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+ file2.length());
+            System.out.println("--------------");
+            System.out.println("--------------");
+
             if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
                 break;
             intercalacao(file1, file2, teste1, size);
@@ -223,6 +246,7 @@ public class Sort {
         file_2.delete();
         file_3.delete();
         file_4.delete();
+        teste_1.delete();
     }
 
     private Movie readMovie(int fileSize, String id, boolean lapide, RandomAccessFile file) throws Exception {
@@ -262,11 +286,20 @@ public class Sort {
     private void intercalacao(RandomAccessFile fRead1, RandomAccessFile fRead2, RandomAccessFile fWrite, int size)
             throws IOException, Exception {
 
+        
         Movie movie1 = null;
         Movie movie2 = null;
 
         int cont1 = 0;
         int cont2 = 0;
+        String id1 = "";
+            String id2 = "";
+            int sizeMovie1 = 0;
+            int sizeMovie2 = 0;
+            long position1 = 0;
+            long position2 = 0;
+            long firstPosition1 = 0;
+            long firstPosition2 = 0;
 
         while (true) {
             if (cont1 >= size && cont2 >= size) {
@@ -275,14 +308,7 @@ public class Sort {
                 break;
             }
 
-            String id1 = "";
-            String id2 = "";
-            int sizeMovie1 = 0;
-            int sizeMovie2 = 0;
-            long position1 = 0;
-            long position2 = 0;
-            long firstPosition1 = 0;
-            long firstPosition2 = 0;
+            
 
             if (fRead1.getFilePointer() < fRead1.length()) {
                 if (cont1 < size) {
@@ -331,14 +357,14 @@ public class Sort {
                     writeMovie(movie1, fWrite);
                     fRead1.seek(position1);
                     fRead1.skipBytes(sizeMovie1);
-                    fRead2.seek(firstPosition2);
+                    //fRead2.seek(firstPosition2);
                     cont1++;
 
                 } else if (movie2 != null) {
                     writeMovie(movie2, fWrite);
                     fRead2.seek(position2);
                     fRead2.skipBytes(sizeMovie2);
-                    fRead1.seek(firstPosition1);
+                    //fRead1.seek(firstPosition1);
                     cont2++;
                 }
             }
@@ -346,6 +372,7 @@ public class Sort {
             movie2 = null;
         }
 
+       // System.out.println(fRead1.getFilePointer());
         // for (int u = 0; u < 4; u++) {
 
         // if (u % 2 == 0) { // file control
@@ -487,4 +514,30 @@ public class Sort {
         // }
 
     }
+
+    public void read() throws IOException {
+        FileWriter fileWrite = new FileWriter("Id.txt");
+        int sizeMovie;
+        boolean lapide;
+        String movieId;
+        teste1.seek(0);
+        try {
+            while (teste1.getFilePointer() < teste1.length()) { // while the file is not done
+                sizeMovie = teste1.readInt(); // read the size of the object being read
+                lapide = teste1.readBoolean(); // see if movie is valid
+                if (lapide) {
+                    teste1.readInt();
+                    movieId = teste1.readUTF();
+                    fileWrite.write(movieId + "  ");
+                    teste1.skipBytes(sizeMovie - 11);
+                } else {
+                    teste1.skipBytes(sizeMovie - 1); // if is not valid go to next one
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fileWrite.close();
+    }
+
 }
