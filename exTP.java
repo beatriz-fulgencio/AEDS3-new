@@ -50,9 +50,11 @@ public class exTP {
 
     }
 
-    public static int menu( Crud byteFileRandler) throws Exception{
+    public static void menu() throws Exception {
 
+        Crud byteFileRandler = new Crud("movies.db");
         Scanner sc = new Scanner(System.in);
+        int option;
 
         System.out.println("Inicio------------");
         System.out.println();
@@ -69,82 +71,54 @@ public class exTP {
         System.out.println("6 - Ordenar arquivo");
         System.out.println("7 - Mostrar ids ordenados");
         System.out.println("8 - Clear");
-        int option = Integer.parseInt(sc.nextLine());
-
+        option = Integer.parseInt(sc.nextLine());
 
         String id;
         String tipo;
-        switch (option) {
-            case 1: {
-                byteFileRandler.read();
-                System.out.println("Ver registros no arquivo IdsBase.txt");
-                break;
-            }
-            case 2: {
-                byteFileRandler.create();
-                System.out.println("Registro criado");
-                break;
-            }
-            case 3: {
-                System.out.println("Digite o id do registro a ser procurado (com 4 dígitos, EX: 0020): ");
-                id = sc.nextLine();
-                byteFileRandler.read(id);
-                 System.out.println("------------------------- ");
-                 break;
-            }
-            case 4: {
-                System.out.println("Digite o id do registro a ser atualizado (com 4 dígitos, EX: 0020): ");
-                id = sc.nextLine();
-                byteFileRandler.update(id);
-                System.out.println("------------------------- ");
-                
-                sc.nextLine();
-                break;
 
+        if (option == 1) {
+            byteFileRandler.read();
+            System.out.println("Ver registros no arquivo IdsBase.txt");
+        } else if (option == 2) {
+            byteFileRandler.create();
+            System.out.println("Registro criado");
+        } else if (option == 3) {
+            System.out.println("Digite o id do registro a ser procurado (com 4 dígitos, EX: 0020): ");
+            id = sc.nextLine();
+            byteFileRandler.read(id);
+        } else if (option == 4) {
+            System.out.println("Digite o id do registro a ser atualizado (com 4 dígitos, EX: 0020): ");
+            id = sc.nextLine();
+            byteFileRandler.update(id);
+        } else if (option == 5) {
+            System.out.println("Digite o id do registro a ser deletado (com 4 dígitos, EX: 0020): ");
+            id = sc.nextLine();
+            byteFileRandler.delete(id);
+        } else if (option == 6) {
+            Sort fileSort = new Sort("movies.db");
+            System.out.println("Qual tipo de ordenação?\n a)Comum \nb)Com segmentos de tamanho variável ");
+            tipo = sc.nextLine();
+            if (tipo == "a" || tipo == "A") {
+                fileSort.intercalacaoBalanceadaComum();
+            } else if (tipo == "b" || tipo == "B") {
+                fileSort.intercalacaoSegmentosVariaveis();
+            } else {
+                System.out.println("Tipo inválido");
             }
-            case 5: {
-                System.out.println("Digite o id do registro a ser deletado (com 4 dígitos, EX: 0020): ");
-                id = sc.nextLine();
-                byteFileRandler.delete(id);
-                System.out.println("------------------------- ");
-
-                break;
-
-            }
-            case 6: {
-                Sort fileSort = new Sort("movies.db");
-                System.out.println("Qual tipo de ordenação?\n a)Comum \nb)Com segmentos de tamanho variável ");
-                tipo = sc.nextLine();
-                if (tipo == "a" || tipo == "A") {
-                    fileSort.intercalacaoBalanceadaComum();
-                } else if (tipo == "b" || tipo == "B") {
-                    fileSort.intercalacaoSegmentosVariaveis();
-                } else {
-                    System.out.println("Tipo inválido");
-                }
-                break;
-
-            }
-            case 7: {
-                Sort fileSort = new Sort("movies.db");
-                fileSort.read();
-                System.out.println("Ids ordenados no arquivo Id.txt");
-                break;
-
-            }
-            case 8: {
-                Sort fileSort = new Sort("movies.db");
-                fileSort.clear();
-                break;
-
-            }
-            case 0:
+        } else if (option == 7) {
+            Sort fileSort = new Sort("movies.db");
+            fileSort.read();
+            System.out.println("Ids ordenados no arquivo Id.txt");
+        } else if (option == 8) {
+            Sort fileSort = new Sort("movies.db");
+            fileSort.clear();
+        } else if (option == 0) {
             System.out.println("Fim -------");
-        
         }
 
-        //sc.close();
-        return option;
+        if (option > 0) {
+            menu();
+        }
     }
 
     /**
@@ -152,34 +126,6 @@ public class exTP {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
-        Scanner sc = new Scanner(System.in);
-        Crud byteFileRandler = new Crud("movies.db");
-        int option = menu(byteFileRandler);
-
-        System.out.println();
-        System.out.println("Deseja continuar? (1-sim // 0 -nao)");
-
-        String s = sc.nextLine();
-        option = Integer.parseInt(s);
-        
-        while(true){
-        if(option>0) {
-                try{
-                    option = menu(byteFileRandler);
-                    System.out.println();
-                    System.out.println("Deseja continuar? (1-sim // 0 -nao)");
-                    s = sc.nextLine();
-                    option = Integer.parseInt(s);
-                }catch(Exception e){
-                    System.err.print(e);
-                }        
-            }
-        else {
-                byteFileRandler.clear();
-                break;
-            }
-        }
-
+        menu();
     }
-
 }
