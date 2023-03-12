@@ -232,42 +232,40 @@ public class Sort {
         file1.seek(0);
         file2.seek(0);
 
-        int size1 =0, size2 = 0;
+        int size1 = 0, size2 = 0;
 
         while (true) {
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) break;
-
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
+                break;
 
             size1 = control(file1, file1.getFilePointer());
-            size2= control(file2, file2.getFilePointer());
+            size2 = control(file2, file2.getFilePointer());
 
             System.out.println(file1.getFilePointer());
-            System.out.println(" "+size1);
-            System.out.println("  "+file1.length());
+            System.out.println(" " + size1);
+            System.out.println("  " + file1.length());
             System.out.println(" -----------------------");
             System.out.println(file2.getFilePointer());
-            System.out.println(" "+size2);
-            System.out.println("  "+file2.length());
+            System.out.println(" " + size2);
+            System.out.println("  " + file2.length());
             System.out.println(" -----------------------");
             System.out.println(" -----------------------");
-
 
             intercalacao(file1, file2, file3, size1, size2); // writes in file 3
 
-
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())  break;
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
+                break;
 
             size1 = control(file1, file1.getFilePointer());
-            size2= control(file2, file2.getFilePointer());
-
+            size2 = control(file2, file2.getFilePointer());
 
             System.out.println(file1.getFilePointer());
-            System.out.println(" "+size1);
-            System.out.println("  "+file1.length());
+            System.out.println(" " + size1);
+            System.out.println("  " + file1.length());
             System.out.println(" -----------------------");
             System.out.println(file2.getFilePointer());
-            System.out.println(" "+size2);
-            System.out.println("  "+file2.length());
+            System.out.println(" " + size2);
+            System.out.println("  " + file2.length());
             System.out.println(" -----------------------");
             System.out.println(" -----------------------");
 
@@ -583,32 +581,34 @@ public class Sort {
 
         while (true) {
 
-            /*reads first movie */
-            if(file.getFilePointer() < file.length()){
+            /* reads first movie */
+            if (file.getFilePointer() < file.length()) {
                 int sizeMovie1 = file.readInt(); // reads the register size
-                // position = file.getFilePointer(); // gets pointer to the beginning of the register
+                // position = file.getFilePointer(); // gets pointer to the beginning of the
+                // register
                 boolean b1 = file.readBoolean(); // checks if the register is valid
                 file.readInt(); // reads 4
                 id1 = file.readUTF(); // reads the movie id
-                m1 = readMovie(sizeMovie1, id1, b1, file);    
+                m1 = readMovie(sizeMovie1, id1, b1, file);
             }
-          
-            /*reads second movie */
-            if(file.getFilePointer() < file.length()){
+
+            /* reads second movie */
+            if (file.getFilePointer() < file.length()) {
                 pos = file.getFilePointer(); // gets pointer to the beginning of the register
                 int sizeMovie2 = file.readInt(); // reads the register size
-                // position = file.getFilePointer(); // gets pointer to the beginning of the register
+                // position = file.getFilePointer(); // gets pointer to the beginning of the
+                // register
                 boolean b2 = file.readBoolean(); // checks if the register is valid
                 file.readInt(); // reads 4
                 id2 = file.readUTF(); // reads the movie id
-                m2 = readMovie(sizeMovie2, id2, b2, file);    
+                m2 = readMovie(sizeMovie2, id2, b2, file);
             }
 
-            if(m1==null || m2==null){
+            if (m1 == null || m2 == null) {
                 break;
             }
-            
-            if(id1.compareTo(id2)>0){
+
+            if (id1.compareTo(id2) > 0) {
                 break;
             }
 
