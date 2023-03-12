@@ -1,5 +1,7 @@
 import java.io.*;
 
+import javax.print.attribute.Size2DSyntax;
+
 public class Sort {
 
     private File file;
@@ -232,45 +234,126 @@ public class Sort {
         file1.seek(0);
         file2.seek(0);
 
-        int size1 = 0, size2 = 0;
+        int size1 =0, size2 = 0;
 
         while (true) {
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
-                break;
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) break;
 
-            size1 = control(file1, file1.getFilePointer());
-            size2 = control(file2, file2.getFilePointer());
 
-            System.out.println(file1.getFilePointer());
-            System.out.println(" " + size1);
-            System.out.println("  " + file1.length());
-            System.out.println(" -----------------------");
-            System.out.println(file2.getFilePointer());
-            System.out.println(" " + size2);
-            System.out.println("  " + file2.length());
-            System.out.println(" -----------------------");
-            System.out.println(" -----------------------");
+            size1=control(file1, file1.getFilePointer());
+            size2=control(file2, file2.getFilePointer());
+
 
             intercalacao(file1, file2, file3, size1, size2); // writes in file 3
 
-            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())
-                break;
-
-            size1 = control(file1, file1.getFilePointer());
-            size2 = control(file2, file2.getFilePointer());
-
             System.out.println(file1.getFilePointer());
-            System.out.println(" " + size1);
-            System.out.println("  " + file1.length());
+            System.out.println(" "+size1);
+            System.out.println("  "+file1.length());
             System.out.println(" -----------------------");
             System.out.println(file2.getFilePointer());
-            System.out.println(" " + size2);
-            System.out.println("  " + file2.length());
+            System.out.println(" "+size2);
+            System.out.println("  "+file2.length());
             System.out.println(" -----------------------");
             System.out.println(" -----------------------");
 
+
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length())  break;
+
+            size1 = control(file1, file1.getFilePointer());
+            size2= control(file2, file2.getFilePointer());
+
+
             intercalacao(file1, file2, file4, size1, size2); // writes in file 4
+
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+size1);
+            System.out.println("  "+file1.length());
+            System.out.println(" -----------------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+size2);
+            System.out.println("  "+file2.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+
         }
+
+        /* Segunda Intercalação */
+        file3.seek(0);
+        file4.seek(0);
+
+        file1.setLength(0);
+        file2.setLength(0);
+
+
+        int size3 =0, size4 = 0;
+
+        while (true) {
+            if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length()) break;
+
+
+            size3=control(file3, file3.getFilePointer());
+            size4=control(file4, file4.getFilePointer());
+
+
+
+            intercalacao(file3, file4, file1, size3, size4); // writes in file 3
+
+            System.out.println(file3.getFilePointer());
+            System.out.println(" "+size3);
+            System.out.println("  "+file3.length());
+            System.out.println(" -----------------------");
+            System.out.println(file4.getFilePointer());
+            System.out.println(" "+size4);
+            System.out.println("  "+file4.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+
+
+            if (file3.getFilePointer() >= file3.length() && file4.getFilePointer() >= file4.length())  break;
+
+            size3 = control(file3, file3.getFilePointer());
+            size4= control(file4, file4.getFilePointer());
+
+
+            intercalacao(file3, file4, file2, size3, size4); // writes in file 4
+
+            System.out.println(file3.getFilePointer());
+            System.out.println(" "+size3);
+            System.out.println("  "+file3.length());
+            System.out.println(" -----------------------");
+            System.out.println(file4.getFilePointer());
+            System.out.println(" "+size4);
+            System.out.println("  "+file4.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+
+        }
+
+        /* Terceira Intercalação */
+        file1.seek(0);
+        file2.seek(0);
+
+        while (true) {
+            if (file1.getFilePointer() >= file1.length() && file2.getFilePointer() >= file2.length()) break;
+
+
+            size1=control(file1, file1.getFilePointer());
+            size2=control(file2, file2.getFilePointer());
+
+            intercalacao(file1, file2, teste1, size1, size2);
+
+            System.out.println(file1.getFilePointer());
+            System.out.println(" "+size1);
+            System.out.println("  "+file1.length());
+            System.out.println(" -----------------------");
+            System.out.println(file2.getFilePointer());
+            System.out.println(" "+size2);
+            System.out.println("  "+file2.length());
+            System.out.println(" -----------------------");
+            System.out.println(" -----------------------");
+        }
+        
+
     }
 
     /* Quicksort -> sort in primary memory */
@@ -332,6 +415,7 @@ public class Sort {
         file_3.delete();
         file_4.delete();
         teste_1.delete();
+        
     }
 
     private Movie readMovie(int fileSize, String id, boolean lapide, RandomAccessFile file) throws Exception {
@@ -579,36 +663,33 @@ public class Sort {
         String id1 = "";
         String id2 = "";
 
-        while (true) {
-
-            /* reads first movie */
-            if (file.getFilePointer() < file.length()) {
+        while (count<size) {
+            /*reads first movie */
+            if(file.getFilePointer() < file.length()){
                 int sizeMovie1 = file.readInt(); // reads the register size
-                // position = file.getFilePointer(); // gets pointer to the beginning of the
-                // register
+                // position = file.getFilePointer(); // gets pointer to the beginning of the register
                 boolean b1 = file.readBoolean(); // checks if the register is valid
                 file.readInt(); // reads 4
                 id1 = file.readUTF(); // reads the movie id
-                m1 = readMovie(sizeMovie1, id1, b1, file);
+                m1 = readMovie(sizeMovie1, id1, b1, file);    
             }
-
-            /* reads second movie */
-            if (file.getFilePointer() < file.length()) {
-                pos = file.getFilePointer(); // gets pointer to the beginning of the register
+          
+            /*reads second movie */
+            if(file.getFilePointer() < file.length()){
+               pos = file.getFilePointer(); // gets pointer to the beginning of the register
                 int sizeMovie2 = file.readInt(); // reads the register size
-                // position = file.getFilePointer(); // gets pointer to the beginning of the
-                // register
+                // position = file.getFilePointer(); // gets pointer to the beginning of the register
                 boolean b2 = file.readBoolean(); // checks if the register is valid
                 file.readInt(); // reads 4
                 id2 = file.readUTF(); // reads the movie id
-                m2 = readMovie(sizeMovie2, id2, b2, file);
+                m2 = readMovie(sizeMovie2, id2, b2, file);    
             }
 
-            if (m1 == null || m2 == null) {
+            if(m1==null || m2==null){
                 break;
             }
-
-            if (id1.compareTo(id2) > 0) {
+            
+            if(id1.compareTo(id2)>0){
                 break;
             }
 
@@ -645,11 +726,40 @@ public class Sort {
     }
 
     public void read(int x) throws IOException {
-        FileWriter fileWrite = new FileWriter("Id.txt");
+        FileWriter fileWrite = new FileWriter("IdFile1.txt");
+        int sizeMovie;
+        boolean lapide;
+        String movieId;
+        file1.seek(0);
+        int count =0;
+        try {
+            while (file1.getFilePointer() < file1.length()) { // while the file is not done
+                sizeMovie = file1.readInt(); // read the size of the object being read
+                lapide = file1.readBoolean(); // see if movie is valid
+                if (lapide) {
+                    file1.readInt();
+                    movieId = file1.readUTF();
+                    fileWrite.write(movieId + "  ");
+                    count++;
+                    file1.skipBytes(sizeMovie - 11);
+                } else {
+                    file1.skipBytes(sizeMovie - 1); // if is not valid go to next one
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(count);
+        fileWrite.close();
+    }
+
+    public void read(String x) throws IOException {
+        FileWriter fileWrite = new FileWriter("IdFile3.txt");
         int sizeMovie;
         boolean lapide;
         String movieId;
         file3.seek(0);
+        int count =0;
         try {
             while (file3.getFilePointer() < file3.length()) { // while the file is not done
                 sizeMovie = file3.readInt(); // read the size of the object being read
@@ -658,6 +768,7 @@ public class Sort {
                     file3.readInt();
                     movieId = file3.readUTF();
                     fileWrite.write(movieId + "  ");
+                    count++;
                     file3.skipBytes(sizeMovie - 11);
                 } else {
                     file3.skipBytes(sizeMovie - 1); // if is not valid go to next one
@@ -666,6 +777,7 @@ public class Sort {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(count+"/n");
         fileWrite.close();
     }
 
