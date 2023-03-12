@@ -244,8 +244,9 @@ public class Crud {
         }
     }
 
-     public void read() throws IOException {
-        FileWriter fileWrite = new FileWriter("IdfileReader.txt");
+    public void read() throws IOException {
+        FileWriter fw = new FileWriter("cont.txt");
+        FileWriter fileWrite = new FileWriter("IdsBase.txt");
         int sizeMovie;
         boolean lapide;
         String movieId;
@@ -258,7 +259,8 @@ public class Crud {
                 if (lapide) {
                     fileReader.readInt();
                     movieId = fileReader.readUTF();
-                    fileWrite.write(movieId + "  ");
+                    fileWrite.write(readMovie(sizeMovie, movieId, lapide) + "\n -------------------- \n  ");
+                    fw.write(count + "  ");
                     count++;
                     fileReader.skipBytes(sizeMovie - 11);
                 } else {
@@ -268,8 +270,9 @@ public class Crud {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(count + "/n");
+        System.out.println(count);
         fileWrite.close();
+        fw.close();
     }
 
 
