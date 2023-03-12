@@ -27,11 +27,35 @@ public class exTP {
         sc.close();
 
     }
+    public static void aleaRead(Crud bfr) throws FileNotFoundException {
+        File file = new File("netflix.csv");
+        Scanner sc = null;
+
+        int i = 0;
+        try {
+            sc = new Scanner(file);
+            while (/* sc.hasNextLine() */ i < 3856) {
+                Movie movie = new Movie((long)Math.floor(Math.random()*(3856)));
+                movie.read(sc.nextLine());
+                bfr.writeMovie(movie);
+                i++;
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sc.close();
+
+    }
+
 
     public static void main(String[] args) throws Exception {
         Crud byteFileRandler = new Crud("movies.db");
 
         // read(byteFileRandler);
+
+        // aleaRead(byteFileRandler);
 
         // byteFileRandler.clear();
         // byteFileRandler.read("0000");
@@ -45,9 +69,11 @@ public class exTP {
         // fileSort.clear();
 
         // fileSort.intercalacaoBalanceadaComum();
-        fileSort.intercalacaoSegmentosVariaveis();
-
-        // fileSort.read(0);
+        // fileSort.intercalacaoSegmentosVariaveis();
+// 
+        fileSort.read("a");
+        fileSort.read(0);
+        fileSort.read();
         // byteFileRandler.create();
         // byteFileRandler.delete("0099");
         // byteFileRandler.update("0002");
