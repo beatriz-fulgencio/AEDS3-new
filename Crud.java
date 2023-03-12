@@ -244,6 +244,35 @@ public class Crud {
         }
     }
 
+     public void read() throws IOException {
+        FileWriter fileWrite = new FileWriter("IdfileReader.txt");
+        int sizeMovie;
+        boolean lapide;
+        String movieId;
+        fileReader.seek(0);
+        int count = 0;
+        try {
+            while (fileReader.getFilePointer() < fileReader.length()) { // while the file is not done
+                sizeMovie = fileReader.readInt(); // read the size of the object being read
+                lapide = fileReader.readBoolean(); // see if movie is valid
+                if (lapide) {
+                    fileReader.readInt();
+                    movieId = fileReader.readUTF();
+                    fileWrite.write(movieId + "  ");
+                    count++;
+                    fileReader.skipBytes(sizeMovie - 11);
+                } else {
+                    fileReader.skipBytes(sizeMovie - 1); // if is not valid go to next one
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(count + "/n");
+        fileWrite.close();
+    }
+
+
     public void clear() {
         file.delete();
     }
